@@ -42,7 +42,12 @@ def getlist():
                 req = urllib.request.Request(i.url, headers=hdr)
                 response = urllib.request.urlopen(req).getcode()
             except HTTPError as error:
-                logger.error('failed to fetch URL %s. Error: %s' %
+                # Exclude permission denied error in https://warmes-bett.de
+                if "warmes-bett.de" in i.url and error.code == 403:
+                    print("skipping a known issue with URL: %s (error: %s)" % (i.url, error))
+                    pass
+                else:
+                    logger.error('failed to fetch URL %s. Error: %s' %
                              (i.url, error))
             except URLError as error:
                 if isinstance(error.reason, socket.timeout):
